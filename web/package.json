@@ -7,7 +7,7 @@
     ],
   "scripts": {
     "start": "parcel serve src/html/index.html",
-    "build": "parcel build --no-cache --no-source-maps && cp ./dist/* ../src/main/resources/"
+    "build": "parcel build && cp ./dist/* ../src/main/resources/"
   },
   "devDependencies": {
     "@types/react": "^17.0.39",

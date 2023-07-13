@@ -17,3 +17,5 @@ buildNumber.properties
 .classpath
 
 web/node_modules/
+web/dist/
+web/.parcel-cache/

@@ -11,6 +11,9 @@ TODO:
 - Package structure
 - Unit tests
 - Spring JPA
+- better auth: salt hashing, 3rd party oauth2, ...
+- use websockets
+- note update: send delta, not the whole note contents
 */
 
 @SpringBootApplication

@@ -1,6 +1,15 @@
 import * as React from "react";
+import {useEffect, useState} from "react";
 
 
 export const Application = () => {
-    return <div> main app</div>
+    const [data, setData] = useState();
+
+    useEffect(() => {
+        fetch('/users')
+            .then(response => response.json())
+            .then(data => setData(data));
+    }, [])
+
+    return <div> main app: {data}</div>
 }
