@@ -10,6 +10,7 @@ TODO:
 - Persistent DB
 - Package structure
 - Unit tests
+- Spring JPA
 */
 
 @SpringBootApplication
@@ -18,4 +19,6 @@ public class App
     public static void main( String[] args ) {
         SpringApplication.run(App.class, args);
     }
+
+
 }
