@@ -3,11 +3,14 @@ A simple app to create and share text notes (Front-end + Back-end)
 
 # Run locally
 
-The app uses a local sqlite database. Make sure you have JDK 17 and Maven CLI installed.
+The app uses a local sqlite database. Make sure you have JDK 17 and Maven CLI installed. You will also need `yarn` to compile front-end code.
 
 1. `git clone` the repository
 2. `cd` into the repository root.
-3. `mvn spring-boot:run`
+3. `cd web`
+4. `yarn build`
+5. `cp -R dist ../src/main/resources/` 
+6. `mvn spring-boot:run`
 
 # Using the app
 
@@ -16,7 +19,35 @@ The app uses a local sqlite database. Make sure you have JDK 17 and Maven CLI in
 - After login, you will see a list of your notes (and notes shared with you).
 - For each note, you can edit the note by "Edit" button where you can change title or body of the note or share it by entering username of the recipient.
 
-# Improvement
+# Design
+
+The app uses Spring Boot + Spring JPA to manage web application API and also database connectivity. These tools allow the developer to do more with writing less code.
+
+The app consists of 3 layers:
+- Database: A single sqlite database file hosted within the app's classpath.
+- Back-end: A Java application with API endpoints to do app functionalities (e.g. login)
+- Front-end: A React/Typescript app which uses Parcel for packaging.
+
+# Scaling
+
+In order to scale this, it needs to happen on 3 fronts:
+- Database: We need to switch to a scalable DB server like MySQL probably enhanced with a caching later.
+- Application: As the app is stateless (Except for session storage), we can easily replicate it across multiple app servers with a LB in front.
+- Front-end: These are static resources that can be delivered to a CDN for faster client-side rendering.
+
+In order to provide fast real-time sync across users, we can use a websocket-based solution to push any changes to clients that have subscribed to updates for one or a set of notes. On the server-side, these changes can be sent via a single outbound gateway which uses a Kafka topic to listen to any updates coming from any of the application server machines.
+
+In order to add Kafka, we will need to do below:
+1. Set up a set of Kafka brokers with enough storage provisioned according to system load and retention requirements.
+2. In the application side, we should define topics like "note.update" or "note.shared".
+3. API code that does the corresponding functionality should also publish an update to the related Kafka topic.
+4. API should also subscribe to those Kafka topics and translate those messages into websocket push messages so clients are updated in realtime.
+
+## When to switch to Kafka?
+
+This really depends on the available resource and client-side requirements. We should usually deploy a monitoring solution like Prometheus and check the API throughput and response times. When these are above a certain threshold, then it is probably time to plan to switch to a Kafka model.
+
+# Improvement (shortcuts taken)
 
 There are a ton of places for improvement both on front-end side and back-end side. Some examples:
 - Make UI as a separate app rather than a module embedded within back-end app.
