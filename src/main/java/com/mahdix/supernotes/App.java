@@ -14,6 +14,9 @@ TODO:
 - better auth: salt hashing, 3rd party oauth2, ...
 - use websockets
 - note update: send delta, not the whole note contents
+- Json data structure for api request/responses
+- create proper services apart from controller
+- response: return error code rather than strings
 */
 
 @SpringBootApplication
