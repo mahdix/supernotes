@@ -5,11 +5,14 @@ import com.mahdix.supernotes.data.*;
 import com.mahdix.supernotes.model.NoteModel;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class Controller {
@@ -22,49 +25,86 @@ public class Controller {
     @Autowired
     private SharesRepository sharesRepository;
 
-    @PostMapping(value = "/login")
-    public String login(String user, String password, HttpSession session) {
+    @GetMapping( value = "/user" )
+    public String getUser(HttpSession session) {
+        var currentUser = session.getAttribute("current_user");
+        if ( currentUser == null ) {
+            return "";
+        }
+
+        return (( User ) currentUser).getUsername();
+    }
+
+    @PostMapping( value = "/login" )
+    public String login(@RequestBody Map<String, String> request, HttpSession session) {
+        var user = request.get("user");
+        var password = request.get("password");
         var matches = userRepository.findAllByUsernameAndPassword(user, password);
         if ( matches.size() == 1 ) {
-            session.setAttribute("user_id", matches.get(0).getId());
+            session.setAttribute("current_user", matches.get(0));
             return "success";
         }
 
         return "failure";
     }
 
-    @PostMapping(value = "/register")
-    public String register(String user, String password) {
+    @PostMapping( value = "/register" )
+    public String register(@RequestBody Map<String, String> request) {
+        var user = request.get("user");
+        var password = request.get("password");
         User u = new User(user, password);
         userRepository.save(u);
         return "success";
     }
 
-    @PostMapping(value = "/note")
-    public String createOrUpdateNote(Long id, String title, String contents, HttpSession session) {
-        var userId = session.getAttribute("user_id");
-        if ( userId != null ) {
-            var user = userRepository.findById((Long)userId).get();
-            var notes  = noteRepository
+    @PostMapping( value = "/note" )
+    public String createOrUpdateNote(@RequestBody Map<String, String> request, HttpSession session) {
+        Long id = Long.parseLong(request.get("id"));
+        String title = request.get("title");
+        String body = request.get("body");
+        String sharedUsers = request.get("sharedUsers");
+
+        var userObj = session.getAttribute("current_user");
+        if ( userObj != null ) {
+            var user = ( User ) userObj;
+            var notes = noteRepository
                 .findById(id);
 
+            Note note;
             if ( notes.isPresent() ) {
-                var note = notes.get();
-                note.setBody(contents);
+                note = notes.get();
+                note.setTitle(title);
+                note.setBody(body);
                 noteRepository.save(note);
-                return "updated";
             } else {
-                var note = new Note(title, contents, user.getId());
+                note = new Note(title, body, user.getId());
                 noteRepository.save(note);
-                return "created";
             }
+
+            var toShareWith = userRepository.findAllByUsernameIn(Arrays.stream(sharedUsers.split(",")).toList());
+            var shares = sharesRepository.findAllByNoteId(note.getId());
+            var alreadyShared = shares
+                .stream()
+                .map(x -> x.getUserId())
+                .map(x -> userRepository.findById(x).get())
+                .map(x -> x.getUsername())
+                .toList();
+
+            for ( var userNameToShareWith : toShareWith ) {
+                if ( !alreadyShared.contains(userNameToShareWith.getUsername()) ) {
+                    var share = new Shares(note.getId(), userNameToShareWith.getId());
+                    sharesRepository.save(share);
+                }
+            }
+
+            return "updated";
         }
 
         return "auth fail";
     }
 
     //TODO: ensure user is authenticated
-    @PostMapping(value = "/share")
+    @PostMapping( value = "/share" )
     public String shareNote(Long noteId, String userName) {
         var user = userRepository.findFirstByUsername(userName);
         var share = new Shares(noteId, user.getId());
@@ -72,14 +112,31 @@ public class Controller {
         return "shared";
     }
 
-    @GetMapping(value = "/myNotes")
+    @GetMapping( value = "/logout" )
+    public String logout(HttpSession session) {
+        session.removeAttribute("current_user");
+        return "";
+    }
+
+    @GetMapping( value = "/myNotes" )
     public List<NoteModel> getMyNotes(HttpSession session) {
-        var userId = session.getAttribute("user_id");
-        assert userId != null;
+        var userObj = session.getAttribute("current_user");
 
-        var notes = noteRepository.findAllByOwnerUserId((Long)userId);
+        if ( userObj == null ) {
+            return Collections.emptyList();
+        }
 
-        return notes.stream().map(note -> {
+        var user = ( User ) userObj;
+
+        var notes = noteRepository.findAllByOwnerUserId(user.getId());
+
+        var shares = sharesRepository
+            .findAllByUserId(user.getId())
+            .stream().map(x -> x.getNoteId()).toList();
+
+        var notesShared = noteRepository.findAllById(shares);
+
+        return Stream.concat(notes.stream(), notesShared.stream()).map(note -> {
             var shared = sharesRepository.findAllByNoteId(note.getId());
             var users = userRepository
                 .findAllByIdIn(shared.stream().map(Shares::getUserId).toList());
@@ -87,13 +144,13 @@ public class Controller {
                 note.getId(),
                 note.getTitle(),
                 note.getBody(),
-                users.stream().map(x -> x.getUsername()).toList()
+                users.stream().map(x -> x.getUsername()).collect(Collectors.joining(","))
             );
         }).toList();
     }
 
 
-    @GetMapping(value = "/users")
+    @GetMapping( value = "/users" )
     public List<String> getUsers() {
         return userRepository.findAll().stream().map(User::getUsername).toList();
     }

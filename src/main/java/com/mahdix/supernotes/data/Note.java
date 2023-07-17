@@ -1,11 +1,14 @@
 package com.mahdix.supernotes.data;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Note {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String body;
@@ -15,6 +18,10 @@ public class Note {
         this.title = title;
         this.body = body;
         this.ownerUserId = ownerUserId;
+    }
+
+    public Note() {
+
     }
 
     public Long getId() {

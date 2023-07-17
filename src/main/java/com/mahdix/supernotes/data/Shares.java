@@ -1,9 +1,14 @@
 package com.mahdix.supernotes.data;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+@Entity
 public class Shares {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long noteId;
@@ -13,6 +18,10 @@ public class Shares {
         this.id = id;
         this.noteId = noteId;
         this.userId = userId;
+    }
+
+    public Shares() {
+
     }
 
     public Long getId() {
