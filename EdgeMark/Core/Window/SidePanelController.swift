@@ -23,8 +23,13 @@ final class SidePanelController: NSWindowController {
     private var isAnimating = false
     private var animationGeneration = 0
     private var hideTimer: Timer?
+    private var autoHidePollTimer: Timer?
     private var dummyWindow: NSWindow?
     private var trackingArea: NSTrackingArea?
+    /// True while an NSMenu (context menu, gear menu, etc.) is tracking.
+    /// Menu windows sit above the panel, so AppKit sends mouseExited even though
+    /// the user is still interacting with EdgeMark.
+    private var isTrackingMenu = false
     private var previousApp: NSRunningApplication?
     /// Retained reference to the SwiftUI hosting view for layer updates.
     private var contentHostingView: NSView?
@@ -146,7 +151,7 @@ final class SidePanelController: NSWindowController {
 
         // Click-outside dismissal
         NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
-            guard let self, isShown, !self.isMouseInPanel(),
+            guard let self, isShown, !isTrackingMenu, !self.isMouseInPanel(),
                   PanelSettings.shared.hideOnClickOutside,
                   PanelSettings.shared.dismissalMode == .auto,
                   !PanelSettings.shared.isPanelPinned else { return }
@@ -272,6 +277,19 @@ final class SidePanelController: NSWindowController {
             name: .panelPinStateChanged,
             object: nil,
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(menuTrackingDidBegin),
+            name: NSMenu.didBeginTrackingNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(menuTrackingDidEnd),
+            name: NSMenu.didEndTrackingNotification,
+            object: nil,
+        )
     }
 
     @available(*, unavailable)
@@ -346,6 +364,39 @@ final class SidePanelController: NSWindowController {
         }
     }
 
+    // MARK: - Menu tracking
+
+    @objc private func menuTrackingDidBegin() {
+        isTrackingMenu = true
+        cancelHideTimer()
+    }
+
+    @objc private func menuTrackingDidEnd() {
+        isTrackingMenu = false
+        // The click that dismissed the menu is not delivered as mouseEntered, so
+        // re-evaluate after the nested menu run loop ends.
+        DispatchQueue.main.async { [weak self] in
+            self?.considerAutoHideAfterMenu()
+        }
+    }
+
+    private func considerAutoHideAfterMenu() {
+        guard isShown, !isTrackingMenu, !isMouseInPanel(),
+              PanelSettings.shared.dismissalMode == .auto,
+              !PanelSettings.shared.isPanelPinned else { return }
+        if PanelSettings.shared.autoHideOnMouseExit {
+            window?.makeFirstResponder(nil)
+            let delay = PanelSettings.shared.hideDelay
+            if delay == 0 {
+                hidePanel()
+            } else {
+                startHideTimer(delay: delay)
+            }
+        } else if PanelSettings.shared.hideOnClickOutside {
+            hidePanel(restoreFocus: false)
+        }
+    }
+
     // MARK: - Space Change
 
     @objc private func handleSpaceChange() {
@@ -417,21 +468,76 @@ final class SidePanelController: NSWindowController {
     }
 
     override func mouseExited(with _: NSEvent) {
-        guard isShown, !isAnimating, !isEditorFocused,
+        guard isShown,
               PanelSettings.shared.autoHideOnMouseExit,
               PanelSettings.shared.dismissalMode == .auto,
               !PanelSettings.shared.isPanelPinned else { return }
-        let delay = PanelSettings.shared.hideDelay
-        if delay == 0 {
-            hidePanel()
-        } else {
-            Log.window.debug("[SidePanelController] mouseExited — hide timer (\(delay)s)")
-            startHideTimer(delay: delay)
+        // Context menus are separate windows. AppKit reports an exit when the
+        // menu appears over the panel, even if the cursor never left the frame.
+        guard !isTrackingMenu else { return }
+        // If we are still animating the show, the exit was fired before the panel
+        // settled. Defer the check until the animation (0.2s) finishes — otherwise
+        // the event is dropped and the panel never hides ("random" bug).
+        if isAnimating {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+                self?.evaluateAutoHide(fromMouseExit: true)
+            }
+            return
         }
+        evaluateAutoHide(fromMouseExit: true)
     }
 
     override func mouseEntered(with _: NSEvent) {
         cancelHideTimer()
+    }
+
+    /// Centralised auto-hide decision — used by mouseExited and by the
+    /// polling timer. When the cursor is in the peek window or the gap strip
+    /// we deliberately stay visible (user is crossing to the preview).
+    private func evaluateAutoHide(fromMouseExit: Bool = false) {
+        guard isShown, !isTrackingMenu,
+              PanelSettings.shared.autoHideOnMouseExit,
+              PanelSettings.shared.dismissalMode == .auto,
+              !PanelSettings.shared.isPanelPinned else { return }
+        if isAnimating {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+                self?.evaluateAutoHide(fromMouseExit: fromMouseExit)
+            }
+            return
+        }
+        if isMouseInPanel() {
+            cancelHideTimer()
+            return
+        }
+        guard hideTimer == nil else { return }
+        window?.makeFirstResponder(nil)
+        let delay = PanelSettings.shared.hideDelay
+        if delay == 0 {
+            hidePanel()
+        } else {
+            Log.window.debug("[SidePanelController] auto-hide — hide timer (\(delay)s)")
+            startHideTimer(delay: delay)
+        }
+    }
+
+    private func startAutoHidePolling() {
+        stopAutoHidePolling()
+        // Poll 5× per second — cheap (just a frame-contains check) and
+        // guarantees the panel hides even if the NSTrackingArea mouseExited
+        // was dropped (animation race, peek gap, menu overlay, etc.).
+        autoHidePollTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            self?.evaluateAutoHide()
+        }
+        // Fire promptly so a missed mouseExited doesn't leave the panel stuck
+        // for a full poll interval.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.evaluateAutoHide()
+        }
+    }
+
+    private func stopAutoHidePolling() {
+        autoHidePollTimer?.invalidate()
+        autoHidePollTimer = nil
     }
 
     // MARK: - Show / Hide
@@ -451,6 +557,7 @@ final class SidePanelController: NSWindowController {
         animationGeneration = gen
 
         let (shownFrame, _) = panelFrames(visibleFrame: visibleFrame, side: side)
+        startAutoHidePolling()
 
         // Save the frontmost app so we can restore focus when hiding
         let frontmost = NSWorkspace.shared.frontmostApplication
@@ -522,6 +629,7 @@ final class SidePanelController: NSWindowController {
         let gen = animationGeneration &+ 1
         animationGeneration = gen
         cancelHideTimer()
+        stopAutoHidePolling()
         edgeDetector.pauseDetection()
 
         let panelWidth = window.frame.width
@@ -703,23 +811,27 @@ final class SidePanelController: NSWindowController {
         if window.frame.contains(cursor) {
             return true
         }
-        // 2. Inside the peek preview window
+        // 2. Inside the peek preview window (only when visible)
         if let peekFrame = peekCoordinator.peekWindowFrame, peekFrame.contains(cursor) {
             return true
         }
-        // 3. Inside the 12pt gap strip between the panel and the preview
-        let gap = PeekWindowController.gap
-        let side = PanelSettings.shared.edgeSide
-        let gapStrip = switch side {
-        case .right:
-            NSRect(x: window.frame.minX - gap, y: window.frame.minY,
-                   width: gap, height: window.frame.height)
-        case .left:
-            NSRect(x: window.frame.maxX, y: window.frame.minY,
-                   width: gap, height: window.frame.height)
-        }
-        if gapStrip.contains(cursor) {
-            return true
+        // 3. Inside the gap strip between the panel and the preview — only
+        //    when the preview is actually showing; otherwise the 4pt strip is
+        //    just desktop and should not keep the panel alive.
+        if peekCoordinator.peekWindowFrame != nil {
+            let gap = PeekWindowController.gap
+            let side = PanelSettings.shared.edgeSide
+            let gapStrip = switch side {
+            case .right:
+                NSRect(x: window.frame.minX - gap, y: window.frame.minY,
+                       width: gap, height: window.frame.height)
+            case .left:
+                NSRect(x: window.frame.maxX, y: window.frame.minY,
+                       width: gap, height: window.frame.height)
+            }
+            if gapStrip.contains(cursor) {
+                return true
+            }
         }
         return false
     }
@@ -735,11 +847,6 @@ final class SidePanelController: NSWindowController {
     private func cancelHideTimer() {
         hideTimer?.invalidate()
         hideTimer = nil
-    }
-
-    /// Whether an NSTextView in the panel is the first responder (user is editing).
-    private var isEditorFocused: Bool {
-        window?.firstResponder is NSTextView
     }
 
     /// Handle Space-to-preview (Quick Look). Returns true if the event was consumed.

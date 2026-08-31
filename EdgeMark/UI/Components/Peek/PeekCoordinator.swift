@@ -80,7 +80,8 @@ final class PeekCoordinator {
     /// The peek preview window's current screen frame, or `nil` if not showing.
     /// Used by `SidePanelController.isMouseInPanel()` to extend the hover region.
     var peekWindowFrame: NSRect? {
-        controller.window?.frame
+        guard controller.isShowing else { return nil }
+        return controller.window?.frame
     }
 
     /// Schedule the preview to appear after `showDelay`. Called from a row's
@@ -128,7 +129,7 @@ final class PeekCoordinator {
             }
             scheduledID = id
             isKeyboardTriggered = false // hover now drives the preview
-            let tint = AppSettings.shared.panelTint.color
+            let tint = AppSettings.shared.panelColor
             controller.show(
                 content: content,
                 anchorRow: anchorRowScreen,
@@ -246,7 +247,7 @@ final class PeekCoordinator {
 
         let side = PanelSettings.shared.edgeSide
         let screen = NSScreen.main ?? NSScreen.screens.first!
-        let tint = AppSettings.shared.panelTint.color
+        let tint = AppSettings.shared.panelColor
         // anchorRow is unused by computeFrame; pass panelFrame as a placeholder.
         controller.show(
             content: content,
@@ -267,7 +268,7 @@ final class PeekCoordinator {
         Log.peek.debug("[PeekCoordinator] updateForSelectionChange — id=\(String(describing: content.id))")
         cancelDismiss()
         scheduledID = content.id
-        let tint = AppSettings.shared.panelTint.color
+        let tint = AppSettings.shared.panelColor
         let side = PanelSettings.shared.edgeSide
         let screen = NSScreen.main ?? NSScreen.screens.first!
         controller.show(

@@ -15,7 +15,6 @@ struct GeneralSettingsTab: View {
     @State private var activeRootID: String?
     @State private var askOnLaunch: Bool
     @State private var removalBlockedMessage: String?
-    @State private var hoveredCheckboxPreset: AppSettings.TaskCheckboxPreset?
 
     init() {
         _appearanceMode = State(initialValue: AppSettings.shared.appearanceMode)
@@ -55,14 +54,18 @@ struct GeneralSettingsTab: View {
                     AppSettings.shared.appearanceMode = newValue
                 }
 
-                Picker(l10n["settings.general.panelStyle"], selection: $settings.panelStyle) {
-                    ForEach(AppSettings.PanelStyle.allCases, id: \.self) { style in
-                        Text(style.displayName(l10n)).tag(style)
-                    }
-                }
-                Picker(l10n["settings.general.panelTint"], selection: $settings.panelTint) {
-                    ForEach(AppSettings.PanelTint.allCases, id: \.self) { tint in
-                        Text(tint.displayName(l10n)).tag(tint)
+                LabeledContent(l10n["settings.general.panelColor"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.panelSwiftUIColor ?? Color(nsColor: .windowBackgroundColor) },
+                            set: { settings.panelColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        if settings.panelColorHex != nil {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.panelColorHex = nil
+                            }
+                        }
                     }
                 }
             } header: {
@@ -104,38 +107,18 @@ struct GeneralSettingsTab: View {
                     }
                 }
 
-                LabeledContent(l10n["settings.editor.checkboxStyle"]) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(AppSettings.TaskCheckboxPreset.allCases, id: \.self) { preset in
-                                let isSelected = settings.taskCheckboxPreset == preset
-                                let isHovered = hoveredCheckboxPreset == preset
-                                Button {
-                                    settings.taskCheckboxPreset = preset
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: preset.uncheckedSymbolName)
-                                        Image(systemName: preset.checkedSymbolName)
-                                    }
-                                    .font(.title3)
-                                    .foregroundStyle(isSelected ? Color.accentColor : (isHovered ? .primary : .secondary))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(.primary.opacity(isSelected ? 0.12 : (isHovered ? 0.08 : 0))),
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .strokeBorder(Color.accentColor, lineWidth: isSelected ? 1.5 : 0),
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                                .onHover { hoveredCheckboxPreset = $0 ? preset : nil }
-                                .help(l10n["settings.editor.checkboxStyle.\(preset.rawValue)"])
+                LabeledContent(l10n["settings.editor.textColor"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.textColor },
+                            set: { settings.textColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        if settings.textColorHex.uppercased() != "#FFFFFF" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.textColorHex = "#FFFFFF"
                             }
                         }
-                        .animation(.easeInOut(duration: 0.15), value: hoveredCheckboxPreset)
                     }
                 }
 
@@ -152,6 +135,34 @@ struct GeneralSettingsTab: View {
                 Toggle(l10n["settings.editor.spacePreview"], isOn: $settings.spaceToPreviewEnabled)
             } header: {
                 Label(l10n["settings.editor.section"], systemImage: "textformat")
+            }
+
+            Section {
+                Toggle(l10n["settings.marker.enable1"], isOn: $settings.marker1Enabled)
+                LabeledContent(l10n["settings.marker.prefix1"]) {
+                    TextField("", text: $settings.marker1Prefix)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 140)
+                        .disabled(!settings.marker1Enabled)
+                }
+                LabeledContent(l10n["settings.marker.color1"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.marker1Color },
+                            set: { settings.marker1ColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .disabled(!settings.marker1Enabled)
+                        if settings.marker1ColorHex.uppercased() != "#FF3B30" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.marker1ColorHex = "#FF3B30"
+                            }
+                        }
+                    }
+                }
+                .disabled(!settings.marker1Enabled)
+            } header: {
+                Label(l10n["settings.marker.section"], systemImage: "highlighter")
             }
 
             Section {

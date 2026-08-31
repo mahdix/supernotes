@@ -2,6 +2,7 @@ import AppKit
 import Foundation
 import OSLog
 import ServiceManagement
+import SwiftUI
 
 @Observable
 final class AppSettings {
@@ -15,29 +16,6 @@ final class AppSettings {
         case dateCreated = "Date Created"
     }
 
-    // MARK: - Panel Tint
-
-    enum PanelTint: String, CaseIterable {
-        case system
-        case graphite
-        case slate
-        case sand
-        case sage
-        case rose
-
-        /// Translucent tint applied as a sublayer behind content. nil = no tint (system material only).
-        var color: NSColor? {
-            switch self {
-            case .system: nil
-            case .graphite: NSColor(white: 0.4, alpha: 0.18)
-            case .slate: NSColor(red: 0.40, green: 0.50, blue: 0.62, alpha: 0.18)
-            case .sand: NSColor(red: 0.80, green: 0.68, blue: 0.48, alpha: 0.18)
-            case .sage: NSColor(red: 0.52, green: 0.68, blue: 0.55, alpha: 0.18)
-            case .rose: NSColor(red: 0.82, green: 0.58, blue: 0.62, alpha: 0.18)
-            }
-        }
-    }
-
     var sortBy: SortBy = .dateModified {
         didSet { UserDefaults.standard.set(sortBy.rawValue, forKey: "sortBy") }
     }
@@ -46,8 +24,29 @@ final class AppSettings {
         didSet { UserDefaults.standard.set(sortAscending, forKey: "sortAscending") }
     }
 
-    var panelTint: PanelTint = .system {
-        didSet { UserDefaults.standard.set(panelTint.rawValue, forKey: "panelTint") }
+    // MARK: - Panel color
+
+    /// Hex string ("#RRGGBB") for the panel background tint. nil = no tint (system material only).
+    var panelColorHex: String? {
+        didSet {
+            if let hex = panelColorHex {
+                UserDefaults.standard.set(hex, forKey: "panelColorHex")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "panelColorHex")
+            }
+        }
+    }
+
+    /// AppKit color resolved from `panelColorHex`.
+    var panelColor: NSColor? {
+        guard let hex = panelColorHex else { return nil }
+        return NSColor(hex: hex)
+    }
+
+    /// SwiftUI Color resolved from `panelColorHex`.
+    var panelSwiftUIColor: Color? {
+        guard let hex = panelColorHex else { return nil }
+        return Color(hex: hex)
     }
 
     /// PostScript font name (e.g. "HelveticaNeue", "SFMono-Regular"). nil = system font.
@@ -70,56 +69,7 @@ final class AppSettings {
         }
     }
 
-    // MARK: - Task checkbox symbols
 
-    /// SF Symbol presets drawn for `- [ ]` / `- [x]` task-list items. Display-only —
-    /// the underlying markdown stays standard GitHub task-list syntax; this only
-    /// changes which glyph the engine draws over `[ ]` / `[x]`. Backed by
-    /// `swift-markdown-engine` 0.10.1's `TaskCheckboxStyle`; names that fail to
-    /// resolve fall back to the stock look at draw time.
-    enum TaskCheckboxPreset: String, CaseIterable, Codable {
-        case square
-        case circle
-        case diamond
-        case shield
-        case triangle
-        case star
-        case hexagon
-        case heart
-
-        var uncheckedSymbolName: String {
-            switch self {
-            case .square: "square"
-            case .circle: "circle"
-            case .diamond: "diamond"
-            case .shield: "shield"
-            case .triangle: "triangle"
-            case .star: "star"
-            case .hexagon: "hexagon"
-            case .heart: "heart"
-            }
-        }
-
-        var checkedSymbolName: String {
-            switch self {
-            case .square: "checkmark.square.fill"
-            case .circle: "checkmark.circle.fill"
-            case .diamond: "checkmark.diamond.fill"
-            case .shield: "checkmark.shield.fill"
-            case .triangle: "triangle.fill"
-            case .star: "star.fill"
-            case .hexagon: "hexagon.fill"
-            case .heart: "heart.fill"
-            }
-        }
-    }
-
-    /// Default `.square` matches the engine default — no visual change for existing users.
-    /// Live re-render of the editor is driven by `@Observable` tracking (the editor
-    /// reads this via `.id(...)` in its body, so a change recreates the text view).
-    var taskCheckboxPreset: TaskCheckboxPreset = .square {
-        didSet { UserDefaults.standard.set(taskCheckboxPreset.rawValue, forKey: "taskCheckboxPreset") }
-    }
 
     // MARK: - Appearance, updates, launch
 
@@ -174,23 +124,7 @@ final class AppSettings {
         }
     }
 
-    // MARK: - Panel opacity
 
-    enum PanelStyle: String, CaseIterable {
-        case translucent
-        case opaque
-
-        var material: NSVisualEffectView.Material {
-            switch self {
-            case .translucent: .sidebar
-            case .opaque: .contentBackground
-            }
-        }
-    }
-
-    var panelStyle: PanelStyle = .translucent {
-        didSet { UserDefaults.standard.set(panelStyle.rawValue, forKey: "panelStyle") }
-    }
 
     // MARK: - Spell checking
 
@@ -210,6 +144,60 @@ final class AppSettings {
     /// Default off — autocorrect is disruptive in code-heavy notes.
     var automaticSpellingCorrectionEnabled: Bool = false {
         didSet { UserDefaults.standard.set(automaticSpellingCorrectionEnabled, forKey: "automaticSpellingCorrectionEnabled") }
+    }
+
+    // MARK: - Text color
+
+    /// Hex string ("#RRGGBB") for the editor/reader text color. Default white as requested.
+    /// Backed by UserDefaults key "textColorHex".
+    var textColorHex: String = "#FFFFFF" {
+        didSet { UserDefaults.standard.set(textColorHex, forKey: "textColorHex") }
+    }
+
+    /// SwiftUI Color resolved from `textColorHex`.
+    var textColor: Color {
+        Color(hex: textColorHex) ?? .white
+    }
+
+    /// AppKit color resolved from `textColorHex`.
+    var nsTextColor: NSColor {
+        NSColor(hex: textColorHex) ?? .white
+    }
+
+    // MARK: - Marker 1
+
+    /// Whether the Marker 1 line highlighting is enabled. Disabled by default.
+    var marker1Enabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(marker1Enabled, forKey: "marker1Enabled")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// The prefix that identifies a Marker 1 line. Default "!". Empty means no line matches.
+    var marker1Prefix: String = "!" {
+        didSet {
+            UserDefaults.standard.set(marker1Prefix, forKey: "marker1Prefix")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// Hex string ("#RRGGBB") for the Marker 1 text color.
+    var marker1ColorHex: String = "#FF3B30" {
+        didSet {
+            UserDefaults.standard.set(marker1ColorHex, forKey: "marker1ColorHex")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// SwiftUI Color resolved from `marker1ColorHex`.
+    var marker1Color: Color {
+        Color(hex: marker1ColorHex) ?? .red
+    }
+
+    /// AppKit color resolved from `marker1ColorHex`.
+    var nsMarker1Color: NSColor {
+        NSColor(hex: marker1ColorHex) ?? .systemRed
     }
 
     // MARK: - Hover-to-peek
@@ -293,15 +281,8 @@ final class AppSettings {
             sortBy = value
         }
         sortAscending = UserDefaults.standard.bool(forKey: "sortAscending")
-        if let raw = UserDefaults.standard.string(forKey: "panelTint"),
-           let value = PanelTint(rawValue: raw)
-        {
-            panelTint = value
-        }
-        if let raw = UserDefaults.standard.string(forKey: "panelStyle"),
-           let value = PanelStyle(rawValue: raw)
-        {
-            panelStyle = value
+        if let raw = UserDefaults.standard.string(forKey: "panelColorHex"), !raw.isEmpty {
+            panelColorHex = raw
         }
         // If the saved font is no longer installed (e.g. user uninstalled it),
         // drop it silently so the editor falls back to the system font.
@@ -314,11 +295,6 @@ final class AppSettings {
         }
         let savedSize = UserDefaults.standard.object(forKey: "editorFontSize") as? Double
         editorFontSize = savedSize ?? 16
-        if let raw = UserDefaults.standard.string(forKey: "taskCheckboxPreset"),
-           let value = TaskCheckboxPreset(rawValue: raw)
-        {
-            taskCheckboxPreset = value
-        }
         // Appearance, updates, launch (moved from ShortcutSettings)
         if let raw = UserDefaults.standard.string(forKey: "appearanceMode"),
            let mode = AppearanceMode(rawValue: raw)
@@ -335,6 +311,19 @@ final class AppSettings {
         }
         if let raw = UserDefaults.standard.object(forKey: "automaticSpellingCorrectionEnabled") as? Bool {
             automaticSpellingCorrectionEnabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "textColorHex"), !raw.isEmpty {
+            textColorHex = raw
+        }
+        if let raw = UserDefaults.standard.object(forKey: "marker1Enabled") as? Bool {
+            marker1Enabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker1Prefix") {
+            // Empty string is valid (means disabled matching); only fall back when key missing.
+            marker1Prefix = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker1ColorHex"), !raw.isEmpty {
+            marker1ColorHex = raw
         }
         if let raw = UserDefaults.standard.object(forKey: "hoverPeekEnabled") as? Bool {
             hoverPeekEnabled = raw
@@ -379,6 +368,7 @@ extension AppSettings.SortBy {
 extension Notification.Name {
     static let editorFontChanged = Notification.Name("editorFontChanged")
     static let previewSettingsChanged = Notification.Name("previewSettingsChanged")
+    static let markerSettingsChanged = Notification.Name("markerSettingsChanged")
 }
 
 extension AppSettings.HoverPeekDelay {
@@ -392,24 +382,38 @@ extension AppSettings.HoverPeekDelay {
     }
 }
 
-extension AppSettings.PanelTint {
-    func displayName(_ l10n: L10n) -> String {
-        switch self {
-        case .system: l10n["settings.panelTint.system"]
-        case .graphite: l10n["settings.panelTint.graphite"]
-        case .slate: l10n["settings.panelTint.slate"]
-        case .sand: l10n["settings.panelTint.sand"]
-        case .sage: l10n["settings.panelTint.sage"]
-        case .rose: l10n["settings.panelTint.rose"]
-        }
+
+
+// MARK: - Hex color helpers
+
+extension Color {
+    init?(hex: String) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.hasPrefix("#") { s.removeFirst() }
+        guard s.count == 6, let v = UInt32(s, radix: 16) else { return nil }
+        let r = Double((v >> 16) & 0xFF) / 255.0
+        let g = Double((v >> 8) & 0xFF) / 255.0
+        let b = Double(v & 0xFF) / 255.0
+        self = Color(red: r, green: g, blue: b)
+    }
+
+    var hexString: String {
+        guard let comps = NSColor(self).usingColorSpace(.deviceRGB) else { return "#FFFFFF" }
+        let r = Int(round(comps.redComponent * 255))
+        let g = Int(round(comps.greenComponent * 255))
+        let b = Int(round(comps.blueComponent * 255))
+        return String(format: "#%02X%02X%02X", r, g, b)
     }
 }
 
-extension AppSettings.PanelStyle {
-    func displayName(_ l10n: L10n) -> String {
-        switch self {
-        case .translucent: l10n["settings.panelStyle.translucent"]
-        case .opaque: l10n["settings.panelStyle.opaque"]
-        }
+extension NSColor {
+    convenience init?(hex: String) {
+        var s = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.hasPrefix("#") { s.removeFirst() }
+        guard s.count == 6, let v = UInt32(s, radix: 16) else { return nil }
+        let r = CGFloat((v >> 16) & 0xFF) / 255.0
+        let g = CGFloat((v >> 8) & 0xFF) / 255.0
+        let b = CGFloat(v & 0xFF) / 255.0
+        self.init(red: r, green: g, blue: b, alpha: 1)
     }
 }

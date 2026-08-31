@@ -132,6 +132,12 @@ final class PanelSettings {
         didSet { UserDefaults.standard.set(animationStyle.rawValue, forKey: animationStyleKey) }
     }
 
+    /// Whether a single click opens a note or enters a folder (instead of requiring double click).
+    /// Default off — preserves existing double-click behavior.
+    var openWithSingleClick: Bool {
+        didSet { UserDefaults.standard.set(openWithSingleClick, forKey: openWithSingleClickKey) }
+    }
+
     // MARK: - Keys
 
     private let autoHideKey = "autoHideOnMouseExit"
@@ -148,6 +154,7 @@ final class PanelSettings {
     private let swipeGestureSensitivityKey = "swipeGestureSensitivity"
     private let panelWidthKey = "panelWidth"
     private let animationStyleKey = "animationStyle"
+    private let openWithSingleClickKey = "openWithSingleClick"
 
     // MARK: - Init
 
@@ -190,6 +197,7 @@ final class PanelSettings {
         // Panel width (stored as Double since UserDefaults doesn't have CGFloat)
         let savedWidth = UserDefaults.standard.object(forKey: panelWidthKey) as? Double
         panelWidth = savedWidth.map { CGFloat($0) } ?? 400
+        openWithSingleClick = UserDefaults.standard.object(forKey: openWithSingleClickKey) as? Bool ?? false
     }
 }
 

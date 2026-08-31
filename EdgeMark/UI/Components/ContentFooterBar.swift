@@ -2,8 +2,11 @@ import Cocoa
 import SwiftUI
 
 /// Shared footer bar with sort (left) and settings (right) menus.
-/// Pinned at the bottom of the content card on home and folder list screens.
+/// Pinned at the bottom of the content card on home, folder list, and editor screens.
 struct ContentFooterBar: View {
+    /// Sort is only useful on list screens; the editor keeps the settings button only.
+    var showsSortButton: Bool = true
+
     @Environment(AppSettings.self) var settings
     @Environment(NoteStore.self) var noteStore
     @Environment(\.openSettings) private var openSettings
@@ -11,8 +14,10 @@ struct ContentFooterBar: View {
     var body: some View {
         let l10n = L10n.shared
         HStack {
-            HeaderIconButton(systemName: "arrow.up.arrow.down", help: l10n["sort.help"]) {
-                showSortMenu()
+            if showsSortButton {
+                HeaderIconButton(systemName: "arrow.up.arrow.down", help: l10n["sort.help"]) {
+                    showSortMenu()
+                }
             }
             Spacer()
             HeaderIconButton(systemName: "gearshape", help: l10n["menu.settings"]) {

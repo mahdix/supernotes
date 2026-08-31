@@ -9,4 +9,15 @@ extension Date {
         formatter.timeStyle = .short
         return formatter.string(from: self)
     }
+
+    /// Condensed ISO 8601 display: "2026-08-30 20:44".
+    /// Used for the timestamps below the note header (modified / created).
+    /// Locale-independent (en_US_POSIX) and rendered in the current time zone.
+    var iso8601DisplayFormat: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .current
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return formatter.string(from: self)
+    }
 }

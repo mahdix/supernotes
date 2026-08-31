@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F8F898672FD1E02E00AD68BF /* MarkdownEngine in Frameworks */ = {isa = PBXBuildFile; productRef = F8F898662FD1E02E00AD68BF /* MarkdownEngine */; };
-		F8F898692FD1E02E00AD68BF /* MarkdownEngineCodeBlocks in Frameworks */ = {isa = PBXBuildFile; productRef = F8F898682FD1E02E00AD68BF /* MarkdownEngineCodeBlocks */; };
-		F8F8986B2FD1E02E00AD68BF /* MarkdownEngineLatex in Frameworks */ = {isa = PBXBuildFile; productRef = F8F8986A2FD1E02E00AD68BF /* MarkdownEngineLatex */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,9 +26,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8F898692FD1E02E00AD68BF /* MarkdownEngineCodeBlocks in Frameworks */,
-				F8F898672FD1E02E00AD68BF /* MarkdownEngine in Frameworks */,
-				F8F8986B2FD1E02E00AD68BF /* MarkdownEngineLatex in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,9 +69,6 @@
 			);
 			name = EdgeMark;
 			packageProductDependencies = (
-				F8F898662FD1E02E00AD68BF /* MarkdownEngine */,
-				F8F898682FD1E02E00AD68BF /* MarkdownEngineCodeBlocks */,
-				F8F8986A2FD1E02E00AD68BF /* MarkdownEngineLatex */,
 			);
 			productName = EdgeMark;
 			productReference = F83FB9052F4B45D5007775F9 /* EdgeMark.app */;
@@ -107,9 +98,6 @@
 			);
 			mainGroup = F83FB8FC2F4B45D5007775F9;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				F8F898652FD1E02E00AD68BF /* XCRemoteSwiftPackageReference "swift-markdown-engine" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F83FB9062F4B45D5007775F9 /* Products */;
 			projectDirPath = "";
@@ -372,35 +360,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		F8F898652FD1E02E00AD68BF /* XCRemoteSwiftPackageReference "swift-markdown-engine" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nodes-app/swift-markdown-engine";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.6.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		F8F898662FD1E02E00AD68BF /* MarkdownEngine */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F8F898652FD1E02E00AD68BF /* XCRemoteSwiftPackageReference "swift-markdown-engine" */;
-			productName = MarkdownEngine;
-		};
-		F8F898682FD1E02E00AD68BF /* MarkdownEngineCodeBlocks */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F8F898652FD1E02E00AD68BF /* XCRemoteSwiftPackageReference "swift-markdown-engine" */;
-			productName = MarkdownEngineCodeBlocks;
-		};
-		F8F8986A2FD1E02E00AD68BF /* MarkdownEngineLatex */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F8F898652FD1E02E00AD68BF /* XCRemoteSwiftPackageReference "swift-markdown-engine" */;
-			productName = MarkdownEngineLatex;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F83FB8FD2F4B45D5007775F9 /* Project object */;
 }

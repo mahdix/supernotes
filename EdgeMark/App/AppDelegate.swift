@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
         Log.app.info("[AppDelegate] launched v\(version, privacy: .public) (build \(build, privacy: .public))")
         AppSettings.shared.applyAppearance()
+        MarkerHighlighter.startObserving()
         setupMenuBar()
         panelController = SidePanelController()
         SidecarMigration.runIfNeeded()

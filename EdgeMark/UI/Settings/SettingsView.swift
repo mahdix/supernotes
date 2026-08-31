@@ -31,7 +31,7 @@ struct SettingsView: View {
                 }
         }
         .background(FixedWindowTitle(title: l10n["settings.windowTitle"]))
-        .frame(width: 520, height: 420)
+        .frame(width: 520, height: 480)
     }
 }
 

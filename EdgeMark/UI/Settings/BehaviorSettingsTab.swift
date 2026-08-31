@@ -16,6 +16,7 @@ struct BehaviorSettingsTab: View {
     @State private var editorSwipeToNavigateEnabled: Bool
     @State private var swipeGestureSensitivity: Double
     @State private var animationStyle: AnimationStyle
+    @State private var openWithSingleClick: Bool
 
     init() {
         let s = PanelSettings.shared
@@ -32,10 +33,20 @@ struct BehaviorSettingsTab: View {
         _editorSwipeToNavigateEnabled = State(initialValue: s.editorSwipeToNavigateEnabled)
         _swipeGestureSensitivity = State(initialValue: s.swipeGestureSensitivity)
         _animationStyle = State(initialValue: s.animationStyle)
+        _openWithSingleClick = State(initialValue: s.openWithSingleClick)
     }
 
     var body: some View {
         Form {
+            Section {
+                Toggle(l10n["settings.behavior.openWithSingleClick"], isOn: $openWithSingleClick)
+                    .onChange(of: openWithSingleClick) { _, v in
+                        PanelSettings.shared.openWithSingleClick = v
+                    }
+            } header: {
+                Label(l10n["settings.behavior.navigation"], systemImage: "cursorarrow.click.2")
+            }
+
             Section {
                 Picker(l10n["settings.animation.style"], selection: $animationStyle) {
                     Text(l10n["settings.animation.slide"]).tag(AnimationStyle.slide)

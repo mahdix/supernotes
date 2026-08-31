@@ -30,6 +30,10 @@ playground.xcworkspace
 # .swiftpm
 
 .build/
+build/
+build_arm64/
+build_x86_64/
+dist/
 
 # Node (CodeMirror editor build tooling)
 node_modules/

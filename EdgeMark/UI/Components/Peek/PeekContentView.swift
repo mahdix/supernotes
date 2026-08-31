@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Read-only preview body for the peek window. Renders a `Note` via the
-/// engine-backed `ReadOnlyMarkdownView`, or a `Folder` as a compact
+/// plain-text `PlainTextReadOnlyView`, or a `Folder` as a compact
 /// child-note list (header + rows styled like `NoteRowView`).
 struct PeekContentView: View {
     @Environment(L10n.self) var l10n
@@ -19,7 +19,7 @@ struct PeekContentView: View {
     // MARK: - Note
 
     private func notePreview(_ note: Note) -> some View {
-        ReadOnlyMarkdownView(content: note.content, noteFolder: note.folder)
+        PlainTextReadOnlyView(content: note.content)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -30,14 +30,14 @@ struct PeekContentView: View {
             // Header
             HStack(spacing: 8) {
                 Image(systemName: "folder.fill")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(folder.color?.color ?? Color.accentColor)
                 Text(folder.displayName)
-                    .font(.headline)
+                    .font(AppSettings.shared.font(for: .headline))
                     .lineLimit(1)
                 Spacer()
                 Text("\(folder.noteCount)")
-                    .font(.subheadline.monospacedDigit())
+                    .font(AppSettings.shared.font(for: .subheadline).monospacedDigit())
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
@@ -76,17 +76,17 @@ struct PeekContentView: View {
     private func subfolderRow(_ subfolder: Folder) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "folder.fill")
-                .font(.title3)
+                .font(AppSettings.shared.font(for: .title3))
                 .foregroundStyle(subfolder.color?.color ?? Color.accentColor)
                 .frame(width: 22)
 
             Text(subfolder.displayName)
-                .font(.body)
+                .font(AppSettings.shared.font(for: .body))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
             Spacer()
             Text("\(subfolder.noteCount)")
-                .font(.caption.monospacedDigit())
+                .font(AppSettings.shared.font(for: .caption).monospacedDigit())
                 .foregroundStyle(.tertiary)
         }
         .padding(.horizontal, 16)
@@ -98,10 +98,10 @@ struct PeekContentView: View {
         VStack(spacing: 6) {
             Spacer().frame(height: 32)
             Image(systemName: "folder")
-                .font(.system(size: 24))
+                .font(AppSettings.shared.font(size: 24))
                 .foregroundStyle(.tertiary)
             Text(l10n["peek.emptyFolder"])
-                .font(.subheadline)
+                .font(AppSettings.shared.font(for: .subheadline))
                 .foregroundStyle(.secondary)
             Spacer()
         }
@@ -114,7 +114,7 @@ struct PeekContentView: View {
     private func folderNoteRow(_ note: Note) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "doc.text")
-                .font(.title3)
+                .font(AppSettings.shared.font(for: .title3))
                 .foregroundStyle(.secondary)
                 .frame(width: 22)
 
@@ -122,17 +122,17 @@ struct PeekContentView: View {
                 HStack {
                     TagDotsView(tags: note.tags)
                     Text(note.title.isEmpty ? l10n["common.untitled"] : note.title)
-                        .font(.body)
+                        .font(AppSettings.shared.font(for: .body))
                         .foregroundStyle(.primary)
                         .lineLimit(1)
                     Spacer()
                     Text(note.modifiedAt.homeDisplayFormat)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                 }
                 if !note.previewText.isEmpty {
                     Text(note.previewText)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }

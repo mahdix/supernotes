@@ -124,7 +124,7 @@ struct TrashView: View {
             }
             .overlay {
                 Text(l10n["trash.title"])
-                    .font(.headline)
+                    .font(AppSettings.shared.font(for: .headline))
             }
         } content: {
             VStack(spacing: 0) {
@@ -217,11 +217,11 @@ struct TrashView: View {
 
                         HStack(spacing: 4) {
                             Text(note.title.isEmpty ? l10n["common.untitled"] : note.title)
-                                .font(.headline)
+                                .font(AppSettings.shared.font(for: .headline))
                                 .lineLimit(1)
 
                             Text(l10n["editor.readOnly"])
-                                .font(.caption)
+                                .font(AppSettings.shared.font(for: .caption))
                                 .foregroundStyle(.tertiary)
                         }
 
@@ -243,21 +243,21 @@ struct TrashView: View {
                             Image(systemName: "clock")
                             Text(note.modifiedAt.homeDisplayFormat)
                         }
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
 
                         HStack(spacing: 3) {
                             Image(systemName: "calendar")
                             Text(note.createdAt.homeDisplayFormat)
                         }
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                     }
                 }
             }
         } content: {
             if let note = previewingNote {
-                ReadOnlyMarkdownView(content: note.content)
+                PlainTextReadOnlyView(content: note.content)
             }
         }
     }
@@ -319,12 +319,12 @@ struct TrashView: View {
             .overlay {
                 HStack(spacing: 4) {
                     Text(folderDisplayName)
-                        .font(.headline)
+                        .font(AppSettings.shared.font(for: .headline))
                         .lineLimit(1)
                         .layoutPriority(1)
 
                     Text(folderDisplayPath)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -552,26 +552,26 @@ private struct TrashedNoteRowView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "doc.text")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(.secondary)
                     .frame(width: iconWidth)
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(note.title.isEmpty ? L10n.shared["common.untitled"] : note.title)
-                            .font(.body)
+                            .font(AppSettings.shared.font(for: .body))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
 
                         Spacer()
 
                         Text(note.createdAt.homeDisplayFormat)
-                            .font(.caption)
+                            .font(AppSettings.shared.font(for: .caption))
                             .foregroundStyle(.tertiary)
                     }
 
                     Text(trashInfo)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
                 }
@@ -622,12 +622,12 @@ private struct TrashedFolderRowView: View {
             HStack(spacing: 10) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: "folder.fill")
-                        .font(.title3)
+                        .font(AppSettings.shared.font(for: .title3))
                         .foregroundStyle(Color.accentColor)
 
                     if !folder.notes.isEmpty {
                         Text("\(folder.notes.count)")
-                            .font(.system(size: 9, weight: .semibold, design: .rounded))
+                            .font(AppSettings.shared.font(size: 9, weight: .semibold, relativeTo: .caption2))
                             .foregroundStyle(.background)
                             .padding(.horizontal, 3)
                             .padding(.vertical, 0.5)
@@ -640,7 +640,7 @@ private struct TrashedFolderRowView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Text(folder.displayName)
-                            .font(.body)
+                            .font(AppSettings.shared.font(for: .body))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -648,12 +648,12 @@ private struct TrashedFolderRowView: View {
                         Spacer()
 
                         Text(folder.trashedAt.homeDisplayFormat)
-                            .font(.caption)
+                            .font(AppSettings.shared.font(for: .caption))
                             .foregroundStyle(.tertiary)
                     }
 
                     Text(trashInfo)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
                 }

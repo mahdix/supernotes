@@ -89,12 +89,12 @@ struct NoteListView: View {
             .overlay {
                 HStack(spacing: 4) {
                     Text(folderLabel)
-                        .font(.headline)
+                        .font(AppSettings.shared.font(for: .headline))
                         .lineLimit(1)
                         .layoutPriority(1)
 
                     Text(folderPath)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -211,12 +211,19 @@ struct NoteListView: View {
             )
             .rowClick(
                 onSingle: { mods in
-                    noteStore.handleSelectionClick(
-                        on: id,
-                        isShift: mods.contains(.shift),
-                        isCommand: mods.contains(.command),
-                        visibleOrder: visibleOrder,
-                    )
+                    if PanelSettings.shared.openWithSingleClick,
+                       !mods.contains(.shift),
+                       !mods.contains(.command)
+                    {
+                        noteStore.navigateToSubfolder(folder)
+                    } else {
+                        noteStore.handleSelectionClick(
+                            on: id,
+                            isShift: mods.contains(.shift),
+                            isCommand: mods.contains(.command),
+                            visibleOrder: visibleOrder,
+                        )
+                    }
                 },
                 onDouble: { noteStore.navigateToSubfolder(folder) },
             )
@@ -258,12 +265,19 @@ struct NoteListView: View {
             )
             .rowClick(
                 onSingle: { mods in
-                    noteStore.handleSelectionClick(
-                        on: id,
-                        isShift: mods.contains(.shift),
-                        isCommand: mods.contains(.command),
-                        visibleOrder: visibleOrder,
-                    )
+                    if PanelSettings.shared.openWithSingleClick,
+                       !mods.contains(.shift),
+                       !mods.contains(.command)
+                    {
+                        noteStore.openNote(note)
+                    } else {
+                        noteStore.handleSelectionClick(
+                            on: id,
+                            isShift: mods.contains(.shift),
+                            isCommand: mods.contains(.command),
+                            visibleOrder: visibleOrder,
+                        )
+                    }
                 },
                 onDouble: { noteStore.openNote(note) },
             )

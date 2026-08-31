@@ -257,7 +257,7 @@ private struct PeekChrome<Content: View>: View {
     var body: some View {
         content
             .background {
-                VisualEffectView(tint: tint, material: AppSettings.shared.panelStyle.material)
+                VisualEffectView(tint: tint, material: .contentBackground)
             }
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .onExitCommand {

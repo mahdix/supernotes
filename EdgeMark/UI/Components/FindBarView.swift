@@ -4,13 +4,13 @@ import SwiftUI
 // MARK: - FindBarView
 
 /// Overlay bar that slides down from the top of the editor to provide Find and
-/// Replace. It communicates with the underlying NativeTextViewWrapper via the
-/// MarkdownEditorBus notification names defined in MarkdownEditorView.swift:
+/// Replace. It communicates with the underlying editor text view via the
+/// notification names defined in PlainTextEditorView.swift:
 ///
-///   `.editorFindScrollToRange`  — tell the engine which ranges to highlight
-///   `.editorFindClearHighlights` — tell the engine to clear highlights
+///   `.editorFindScrollToRange`  — tell the editor which ranges to highlight
+///   `.editorFindClearHighlights` — tell the editor to clear highlights
 ///
-/// The bar owns match computation and text mutation; the engine only renders
+/// The bar owns match computation and text mutation; the editor only renders
 /// the highlight colors and scrolls the focused match into view.
 struct FindBarView: View {
     /// Controls visibility. Set to false to dismiss.
@@ -55,7 +55,7 @@ struct FindBarView: View {
                         } else if matches.isEmpty {
                             Text(l10n["find.noResults"])
                                 .foregroundStyle(.secondary)
-                                .font(.caption)
+                                .font(AppSettings.shared.font(for: .caption))
                         } else {
                             Text(l10n.t(
                                 "find.matchCount",
@@ -63,7 +63,7 @@ struct FindBarView: View {
                                 "\(matches.count)",
                             ))
                             .foregroundStyle(.secondary)
-                            .font(.caption)
+                            .font(AppSettings.shared.font(for: .caption))
                             .monospacedDigit()
                         }
                     }
@@ -96,7 +96,7 @@ struct FindBarView: View {
                         caseSensitive.toggle()
                     } label: {
                         Text("Aa")
-                            .font(.system(size: 11, weight: caseSensitive ? .bold : .regular))
+                            .font(AppSettings.shared.font(size: 11, weight: caseSensitive ? .bold : .regular))
                             .foregroundStyle(caseSensitive ? .primary : .secondary)
                             .frame(width: 22, height: 18)
                             .background(

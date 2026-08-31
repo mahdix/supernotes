@@ -10,14 +10,14 @@ struct EmptyStateView: View {
         VStack(spacing: 12) {
             Spacer()
             Image(systemName: icon)
-                .font(.system(size: 36))
+                .font(AppSettings.shared.font(size: 36))
                 .foregroundStyle(.tertiary)
             Text(title)
-                .font(.headline)
+                .font(AppSettings.shared.font(for: .headline))
                 .foregroundStyle(.secondary)
             if let subtitle {
                 Text(subtitle)
-                    .font(.caption)
+                    .font(AppSettings.shared.font(for: .caption))
                     .foregroundStyle(.tertiary)
             }
             Spacer()

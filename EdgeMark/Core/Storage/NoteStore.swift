@@ -166,13 +166,26 @@ final class NoteStore {
 
     // MARK: - Animated Navigation
 
+    /// Instant swap — used for note open/close so the editor doesn't slide/fade.
+    private func withoutAnimation(_ updates: () -> Void) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction, updates)
+    }
+
     func navigateToHome() {
         Log.navigation.debug("[NoteStore] navigateToHome")
         navigationDirection = .backward
         clearSelection()
-        withAnimation(.easeInOut(duration: 0.2)) {
-            selectedNote = nil
-            selectedFolder = nil
+        let leavingNote = selectedNote != nil
+        let updates = {
+            self.selectedNote = nil
+            self.selectedFolder = nil
+        }
+        if leavingNote {
+            withoutAnimation(updates)
+        } else {
+            withAnimation(.easeInOut(duration: 0.2), updates)
         }
     }
 
@@ -203,7 +216,7 @@ final class NoteStore {
         clearSelection()
         if selectedNote != nil {
             saveDirtyNotes()
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedNote = nil
             }
         } else if let parent = selectedFolder?.parentPath, !parent.isEmpty {
@@ -223,7 +236,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] openNote — \(title, privacy: .public)")
         navigationDirection = .forward
         clearSelection()
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedNote = note
         }
     }
@@ -236,7 +249,7 @@ final class NoteStore {
             selectedFolder = Folder(name: note.folder, noteCount: 0)
         }
         navigationDirection = .forward
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedNote = note
         }
     }
@@ -246,7 +259,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] closeNote — \(title, privacy: .public)")
         navigationDirection = .backward
         saveDirtyNotes()
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedNote = nil
         }
     }
@@ -271,7 +284,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] navigateToNextNote — \(title, privacy: .public)")
         saveDirtyNotes()
         navigationDirection = .forward
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedNote = next
         }
     }
@@ -287,7 +300,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] navigateToPreviousNote — \(title, privacy: .public)")
         saveDirtyNotes()
         navigationDirection = .backward
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedNote = prev
         }
     }
@@ -537,13 +550,13 @@ final class NoteStore {
         guard notes[index].content != content else { return }
         notes[index].content = content
         notes[index].modifiedAt = Date()
-        // Only derive title from content when an explicit # heading is present.
-        // Without this guard, a rename on a headingless note reverts within ~150ms
-        // because the editor fires contentChanged on load and extractTitle returns
-        // the raw first line, overwriting the manually-set title.
-        let firstLine = content.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? ""
-        if firstLine.hasPrefix("#") {
-            notes[index].title = Self.extractTitle(from: content)
+        // Title is the first line with leading "#" stripped (same as extractTitle).
+        // Editing the first line automatically renames the note.
+        let newTitle = Self.extractTitle(from: content)
+        // Avoid overwriting with "Untitled" on intermediate empty edits unless truly empty.
+        // Still sync when user clears the line to empty.
+        if newTitle != notes[index].title {
+            notes[index].title = newTitle
         }
         dirtyNoteIDs.insert(noteID)
 
@@ -562,13 +575,16 @@ final class NoteStore {
         notes[index].title = trimmed
         notes[index].modifiedAt = Date()
 
-        // Update the first # heading line in content to match the new title
+        // Keep first line in sync with title (store as "# <title>" so
+        // extractTitle dropping "#" round-trips). Editing first line renames, renaming
+        // updates first line.
         var lines = notes[index].content.components(separatedBy: "\n")
-        if let headingIndex = lines.firstIndex(where: { $0.hasPrefix("#") }) {
-            let prefix = String(lines[headingIndex].prefix(while: { $0 == "#" }))
-            lines[headingIndex] = "\(prefix) \(trimmed)"
-            notes[index].content = lines.joined(separator: "\n")
+        if lines.isEmpty {
+            lines = ["# \(trimmed)"]
+        } else {
+            lines[0] = "# \(trimmed)"
         }
+        notes[index].content = lines.joined(separator: "\n")
 
         dirtyNoteIDs.insert(note.id)
 
@@ -1005,7 +1021,7 @@ final class NoteStore {
 
         if selectedNote?.id == note.id {
             navigationDirection = .backward
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedNote = nil
             }
         }
@@ -1054,7 +1070,7 @@ final class NoteStore {
         // Deselect note if it was in the trashed folder
         if let sel = selectedNote, sel.folder == name || sel.folder.hasPrefix(prefix) {
             navigationDirection = .backward
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedNote = nil
             }
         }

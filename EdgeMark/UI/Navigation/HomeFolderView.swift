@@ -185,9 +185,9 @@ struct HomeFolderView: View {
             // Picker header — shown when awaiting a storage choice.
             VStack(spacing: 2) {
                 Label(l10n["picker.chooseStorageLocation"], systemImage: "folder")
-                    .font(.headline)
+                    .font(AppSettings.shared.font(for: .headline))
                 Text(l10n["menu.storageTemporary"])
-                    .font(.caption)
+                    .font(AppSettings.shared.font(for: .caption))
                     .foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
             }
@@ -218,7 +218,7 @@ struct HomeFolderView: View {
             // Title bar
             HStack {
                 Text(l10n["home.title"])
-                    .font(.title2.bold())
+                    .font(AppSettings.shared.font(for: .title2).bold())
 
                 Spacer()
 
@@ -269,9 +269,9 @@ struct HomeFolderView: View {
                             .foregroundStyle(chosen ? Color.accentColor : .secondary)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(root.displayName)
-                                .font(.body)
+                                .font(AppSettings.shared.font(for: .body))
                             Text(root.url.path(percentEncoded: false))
-                                .font(.system(.caption, design: .monospaced))
+                                .font(AppSettings.shared.monospacedFont(for: .caption))
                                 .lineLimit(1)
                                 .truncationMode(.middle)
                                 .foregroundStyle(.secondary)
@@ -418,12 +418,19 @@ struct HomeFolderView: View {
             )
             .rowClick(
                 onSingle: { mods in
-                    noteStore.handleSelectionClick(
-                        on: id,
-                        isShift: mods.contains(.shift),
-                        isCommand: mods.contains(.command),
-                        visibleOrder: visibleOrder,
-                    )
+                    if PanelSettings.shared.openWithSingleClick,
+                       !mods.contains(.shift),
+                       !mods.contains(.command)
+                    {
+                        noteStore.navigateToFolder(folder)
+                    } else {
+                        noteStore.handleSelectionClick(
+                            on: id,
+                            isShift: mods.contains(.shift),
+                            isCommand: mods.contains(.command),
+                            visibleOrder: visibleOrder,
+                        )
+                    }
                 },
                 onDouble: { noteStore.navigateToFolder(folder) },
             )
@@ -466,12 +473,19 @@ struct HomeFolderView: View {
             )
             .rowClick(
                 onSingle: { mods in
-                    noteStore.handleSelectionClick(
-                        on: id,
-                        isShift: mods.contains(.shift),
-                        isCommand: mods.contains(.command),
-                        visibleOrder: visibleOrder,
-                    )
+                    if PanelSettings.shared.openWithSingleClick,
+                       !mods.contains(.shift),
+                       !mods.contains(.command)
+                    {
+                        noteStore.openNote(note)
+                    } else {
+                        noteStore.handleSelectionClick(
+                            on: id,
+                            isShift: mods.contains(.shift),
+                            isCommand: mods.contains(.command),
+                            visibleOrder: visibleOrder,
+                        )
+                    }
                 },
                 onDouble: { noteStore.openNote(note) },
             )
@@ -583,10 +597,10 @@ struct HomeFolderView: View {
         VStack(spacing: 8) {
             Spacer().frame(height: 40)
             Image(systemName: icon)
-                .font(.system(size: 28))
+                .font(AppSettings.shared.font(size: 28))
                 .foregroundStyle(.tertiary)
             Text(message)
-                .font(.subheadline)
+                .font(AppSettings.shared.font(for: .subheadline))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -594,7 +608,7 @@ struct HomeFolderView: View {
 
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .font(.caption.weight(.semibold))
+            .font(AppSettings.shared.font(for: .caption).weight(.semibold))
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .padding(.horizontal, 16)
@@ -645,7 +659,7 @@ struct HomeFolderView: View {
         // Highlight the matched portion
         var attributed = AttributedString(snippetText)
         if let attrRange = attributed.range(of: query, options: .caseInsensitive) {
-            attributed[attrRange].font = .caption.bold()
+            attributed[attrRange].font = AppSettings.shared.font(for: .caption).bold()
             attributed[attrRange].foregroundColor = .orange
         }
         return attributed
@@ -659,17 +673,17 @@ struct HomeFolderView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "doc.text")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(.secondary)
                     .frame(width: iconWidth)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(Self.highlightedTitle(note.title, query: trimmedQuery))
-                        .font(.body)
+                        .font(AppSettings.shared.font(for: .body))
                         .lineLimit(1)
 
                     Text(note.folder.isEmpty ? L10n.shared["common.root"] : note.folder)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                 }
 
@@ -688,18 +702,18 @@ struct HomeFolderView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "doc.text")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(.secondary)
                     .frame(width: iconWidth)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(note.title.isEmpty ? L10n.shared["common.untitled"] : note.title)
-                        .font(.body)
+                        .font(AppSettings.shared.font(for: .body))
                         .foregroundStyle(.primary)
                         .lineLimit(1)
 
                     Text(snippet)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
                 }
@@ -719,7 +733,7 @@ struct HomeFolderView: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "doc.text")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(.secondary)
                     .frame(width: iconWidth)
 
@@ -727,19 +741,19 @@ struct HomeFolderView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(note.title.isEmpty ? l10n["common.untitled"] : note.title)
-                        .font(.body)
+                        .font(AppSettings.shared.font(for: .body))
                         .foregroundStyle(.primary)
                         .lineLimit(1)
 
                     Text(note.folder.isEmpty ? l10n["common.root"] : note.folder)
-                        .font(.caption)
+                        .font(AppSettings.shared.font(for: .caption))
                         .foregroundStyle(.tertiary)
                 }
 
                 Spacer()
 
                 Text(note.modifiedAt.homeDisplayFormat)
-                    .font(.caption)
+                    .font(AppSettings.shared.font(for: .caption))
                     .foregroundStyle(.tertiary)
             }
             .padding(.horizontal, 16)
@@ -813,12 +827,12 @@ struct FolderRowView: View {
         HStack(spacing: 10) {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "folder.fill")
-                    .font(.title3)
+                    .font(AppSettings.shared.font(for: .title3))
                     .foregroundStyle(color?.color ?? Color.accentColor)
 
                 if count > 0 {
                     Text("\(count)")
-                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .font(AppSettings.shared.font(size: 9, weight: .semibold, relativeTo: .caption2))
                         .foregroundStyle(.background)
                         .padding(.horizontal, 3)
                         .padding(.vertical, 0.5)
@@ -829,7 +843,7 @@ struct FolderRowView: View {
             .frame(width: iconWidth)
 
             Text(name)
-                .font(.body)
+                .font(AppSettings.shared.font(for: .body))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -838,7 +852,7 @@ struct FolderRowView: View {
 
             if let date {
                 Text(date.homeDisplayFormat)
-                    .font(.caption)
+                    .font(AppSettings.shared.font(for: .caption))
                     .foregroundStyle(.tertiary)
             }
         }
@@ -867,7 +881,7 @@ struct FolderRowView: View {
 
 // MARK: - Note Row View
 
-/// Note row with hover highlight animation and preview line. Tap gestures are
+/// Note row with hover highlight animation — single-line title only. Tap gestures are
 /// wired by the caller (single-click select, double-click open).
 struct NoteRowView: View {
     let note: Note
@@ -879,33 +893,19 @@ struct NoteRowView: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "doc.text")
-                .font(.title3)
+                .font(AppSettings.shared.font(for: .title3))
                 .foregroundStyle(.secondary)
                 .frame(width: iconWidth)
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    TagDotsView(tags: note.tags)
+            TagDotsView(tags: note.tags)
 
-                    Text(note.title.isEmpty ? L10n.shared["common.untitled"] : note.title)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                        .lineLimit(1)
+            Text(note.title.isEmpty ? L10n.shared["common.untitled"] : note.title)
+                .font(AppSettings.shared.font(for: .body))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+                .truncationMode(.tail)
 
-                    Spacer()
-
-                    Text(note.createdAt.homeDisplayFormat)
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                }
-
-                if !note.previewText.isEmpty {
-                    Text(note.previewText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-            }
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 10)

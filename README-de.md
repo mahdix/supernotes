@@ -57,8 +57,6 @@ xattr -cr /Applications/EdgeMark.app
 - 🔘 Edge-toggle-Modus — Kante berühren, um das Panel zu öffnen und beim Hin- und Her-Kopieren von Text offen zu halten, erneut berühren zum Schließen (kein ⌘P nötig); Auto-hide bleibt Standard
 - 📐 Multi-Monitor-Support mit konfigurierbarer linker oder rechter Kante — nur die äußere Bildschirmkante löst aus, sodass die Maus zwischen Displays nicht versehentlich öffnet
 - ↔️ Anpassbare Breite — innere Kante ziehen zum Ändern der Größe, wird über Neustarts hinweg gespeichert
-- 🪟 Panel-Stil — Wechsel zwischen Transluzentem und Deckendem Panel-Hintergrund
-- 🎨 Panel-Tönung — wähle aus einer kuratierten Palette (System, Graphit, Schiefer, Sand, Salbei, Rose)
 
 ✍️ **Markdown-Bearbeitung**
 

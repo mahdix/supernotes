@@ -23,30 +23,41 @@ struct EditorScreen: View {
         ) {
             headerContent
         } content: {
-            if let note = noteStore.selectedNote {
-                MarkdownEditorView(
-                    noteID: note.id,
-                    noteTitle: note.title,
-                    noteFolder: note.folder,
-                    initialContent: note.content,
-                    onContentChanged: { id, newContent in
-                        noteStore.updateContent(for: id, content: newContent)
-                    },
-                    pendingReload: $pendingEditorReload,
-                    showFindBar: $isFindBarShowing,
-                    onNavigateNext: { noteStore.navigateToNextNote(sortedBy: appSettings) },
-                    onNavigatePrevious: { noteStore.navigateToPreviousNote(sortedBy: appSettings) },
-                )
-                .onAppear {
-                    noteStore.onNeedEditorReload = { content in
-                        pendingEditorReload = content
+            VStack(spacing: 0) {
+                Group {
+                    if let note = noteStore.selectedNote {
+                        PlainTextEditorView(
+                            noteID: note.id,
+                            noteTitle: note.title,
+                            noteFolder: note.folder,
+                            initialContent: note.content,
+                            onContentChanged: { id, newContent in
+                                noteStore.updateContent(for: id, content: newContent)
+                            },
+                            pendingReload: $pendingEditorReload,
+                            showFindBar: $isFindBarShowing,
+                            onNavigateNext: { noteStore.navigateToNextNote(sortedBy: appSettings) },
+                            onNavigatePrevious: { noteStore.navigateToPreviousNote(sortedBy: appSettings) },
+                        )
+                        .id("editor-\(note.id)")
+                        .onAppear {
+                            noteStore.onNeedEditorReload = { content in
+                                pendingEditorReload = content
+                            }
+                        }
+                        .onChange(of: noteStore.pendingEditorFind) { _, pending in
+                            guard pending else { return }
+                            noteStore.pendingEditorFind = false
+                            isFindBarShowing = true
+                        }
                     }
                 }
-                .onChange(of: noteStore.pendingEditorFind) { _, pending in
-                    guard pending else { return }
-                    noteStore.pendingEditorFind = false
-                    isFindBarShowing = true
-                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Divider()
+                    .padding(.horizontal, 12)
+
+                ContentFooterBar(showsSortButton: false)
             }
         }
         .alert(l10n["alert.deleteNote.title"], isPresented: $showDeleteConfirm) {
@@ -96,11 +107,11 @@ struct EditorScreen: View {
 
                     HStack(spacing: 4) {
                         Text(note.title.isEmpty ? l10n["common.untitled"] : note.title)
-                            .font(.headline)
+                            .font(AppSettings.shared.font(for: .headline))
                             .lineLimit(1)
 
                         Text(note.displayDirectory)
-                            .font(.caption)
+                            .font(AppSettings.shared.font(for: .caption))
                             .foregroundStyle(.tertiary)
                             .lineLimit(1)
                     }
@@ -119,14 +130,14 @@ struct EditorScreen: View {
                 HStack(spacing: 12) {
                     DateLabelView(
                         systemName: "clock",
-                        date: note.modifiedAt.homeDisplayFormat,
-                        tooltip: L10n.shared.t("editor.modifiedAt", note.modifiedAt.homeDisplayFormat),
+                        date: note.modifiedAt.iso8601DisplayFormat,
+                        tooltip: L10n.shared.t("editor.modifiedAt", note.modifiedAt.iso8601DisplayFormat),
                     )
 
                     DateLabelView(
                         systemName: "calendar",
-                        date: note.createdAt.homeDisplayFormat,
-                        tooltip: L10n.shared.t("editor.createdAt", note.createdAt.homeDisplayFormat),
+                        date: note.createdAt.iso8601DisplayFormat,
+                        tooltip: L10n.shared.t("editor.createdAt", note.createdAt.iso8601DisplayFormat),
                     )
                 }
             }
@@ -175,7 +186,7 @@ private struct CopyMenuButton: View {
             }
         } label: {
             Image(systemName: "doc.on.doc")
-                .font(.system(size: 14, weight: .medium))
+                .font(AppSettings.shared.font(size: 14, weight: .medium))
                 .foregroundStyle(isHovered ? .primary : .secondary)
                 .frame(width: 28, height: 28)
                 .background {
@@ -214,7 +225,7 @@ private struct DeleteIconButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "trash")
-                .font(.system(size: 14, weight: .medium))
+                .font(AppSettings.shared.font(size: 14, weight: .medium))
                 .foregroundStyle(isHovered ? .red : .secondary)
                 .frame(width: 28, height: 28)
                 .background {
@@ -246,7 +257,7 @@ private struct DateLabelView: View {
             Image(systemName: systemName)
             Text(date)
         }
-        .font(.caption)
+        .font(AppSettings.shared.font(for: .caption))
         .foregroundStyle(.tertiary)
         .contentShape(Rectangle())
         .help(tooltip)
