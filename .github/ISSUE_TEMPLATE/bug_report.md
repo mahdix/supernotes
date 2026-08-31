@@ -28,18 +28,18 @@ If applicable, add screenshots to help explain your problem.
 **Environment**
 
 - macOS version: [e.g. 15.7]
-- EdgeMark version: [e.g. v0.7]
+- SuperNotes version: [e.g. v0.7]
 - Panel position: [Left / Right]
 
 **Console.app logs**
 
-EdgeMark uses Apple's unified logging. To capture logs:
+SuperNotes uses Apple's unified logging. To capture logs:
 
 1. Open **Console.app** (Spotlight → "Console")
-2. In the search bar, type: `subsystem:io.github.ender-wang.EdgeMark`
+2. In the search bar, type: `subsystem:io.github.mahdix.supernotes`
 3. Click the **Action menu** (gear icon) → check **Include Info Messages** and **Include Debug Messages**
 4. Click **Start Streaming**
-5. Reproduce the issue in EdgeMark
+5. Reproduce the issue in SuperNotes
 6. Select the relevant log entries → **Edit → Copy** (Cmd+C)
 7. Paste below:
 

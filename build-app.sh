@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Build EdgeMark.app for Apple Silicon (arm64).
-# Output: dist/EdgeMark.app
+# Build SuperNotes.app for Apple Silicon (arm64).
+# Output: dist/SuperNotes.app
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -8,11 +8,11 @@ cd "$ROOT"
 
 ARCH="arm64"
 CONFIGURATION="Release"
-SCHEME="EdgeMark"
-PROJECT="EdgeMark.xcodeproj"
+SCHEME="SuperNotes"
+PROJECT="SuperNotes.xcodeproj"
 DERIVED_DATA="${ROOT}/build_${ARCH}"
 OUTPUT_DIR="${ROOT}/dist"
-APP_NAME="EdgeMark.app"
+APP_NAME="SuperNotes.app"
 PRODUCT="${DERIVED_DATA}/Build/Products/${CONFIGURATION}/${APP_NAME}"
 DEST="${OUTPUT_DIR}/${APP_NAME}"
 
@@ -55,7 +55,7 @@ if [[ ! -d "$PRODUCT" ]]; then
   exit 1
 fi
 
-BINARY="${PRODUCT}/Contents/MacOS/EdgeMark"
+BINARY="${PRODUCT}/Contents/MacOS/SuperNotes"
 if [[ -f "$BINARY" ]]; then
   strip "$BINARY" || true
 fi
@@ -66,5 +66,5 @@ xattr -cr "$DEST" 2>/dev/null || true
 echo
 echo "==> Done"
 echo "    ${DEST}"
-file "${DEST}/Contents/MacOS/EdgeMark"
-ls -lh "${DEST}/Contents/MacOS/EdgeMark"
+file "${DEST}/Contents/MacOS/SuperNotes"
+ls -lh "${DEST}/Contents/MacOS/SuperNotes"

@@ -1,4 +1,4 @@
-rm -rf /Volumes/Data/Applications/EdgeMark.app
-cp -R dist/EdgeMark.app /Volumes/Data/Applications/
-xattr -cr /Volumes/Data/Applications/EdgeMark.app
-open /Volumes/Data/Applications/EdgeMark.app
+rm -rf /Volumes/Data/Applications/SuperNotes.app
+cp -R dist/SuperNotes.app /Volumes/Data/Applications/
+xattr -cr /Volumes/Data/Applications/SuperNotes.app
+open /Volumes/Data/Applications/SuperNotes.app

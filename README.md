@@ -1,6 +1,6 @@
-<img src=".github/assets/EdgeMark.svg" alt="EdgeMark" width="128" align="left" />
+<img src=".github/assets/SuperNotes.svg" alt="SuperNotes" width="128" align="left" />
 
-<b><font>EdgeMark</font></b>
+<b><font>SuperNotes</font></b>
 
  A native macOS side-panel Markdown notes app. Always one edge away.
 
@@ -11,36 +11,36 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Ender-Wang/EdgeMark/releases"><img src="https://img.shields.io/github/v/release/Ender-Wang/EdgeMark?label=Latest%20Release&color=green" alt="Latest Release" /></a>
-  <a href="https://github.com/Ender-Wang/EdgeMark/releases"><img src="https://img.shields.io/github/downloads/Ender-Wang/EdgeMark/total?color=green" alt="Total Downloads" /></a>
+  <a href="https://github.com/mahdix/supernotes/releases"><img src="https://img.shields.io/github/v/release/mahdix/supernotes?label=Latest%20Release&color=green" alt="Latest Release" /></a>
+  <a href="https://github.com/mahdix/supernotes/releases"><img src="https://img.shields.io/github/downloads/mahdix/supernotes/total?color=green" alt="Total Downloads" /></a>
   <br />
   <img src="https://img.shields.io/badge/Swift-6.2-orange?logo=swift" alt="Swift" />
   <img src="https://img.shields.io/badge/macOS-15.7+-black?logo=apple" alt="macOS" />
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Ender-Wang/EdgeMark?color=blue" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/mahdix/supernotes?color=blue" alt="License" /></a>
 </p>
 
-**Why EdgeMark exists:** [SideNotes](https://www.apptorium.com/sidenotes) nailed the interaction — a notes panel that slides in from the screen edge, always one gesture away. But it's closed-source and paid, with no way to contribute, customize, or verify what it does with your data.
+**Why SuperNotes exists:** [SideNotes](https://www.apptorium.com/sidenotes) nailed the interaction — a notes panel that slides in from the screen edge, always one gesture away. But it's closed-source and paid, with no way to contribute, customize, or verify what it does with your data.
 
-EdgeMark is the open-source alternative: **lightweight, Markdown-first**, and yours to inspect, modify, and extend. Your notes are plain `.md` files on disk — open them in any editor, sync with any service, back them up however you want.
+SuperNotes is the open-source alternative: **lightweight, Markdown-first**, and yours to inspect, modify, and extend. Your notes are plain `.md` files on disk — open them in any editor, sync with any service, back them up however you want.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/assets/screenshot-dark.png" />
     <source media="(prefers-color-scheme: light)" srcset=".github/assets/screenshot-light.png" />
-    <img alt="EdgeMark Screenshots" src=".github/assets/screenshot-light.png" />
+    <img alt="SuperNotes Screenshots" src=".github/assets/screenshot-light.png" />
   </picture>
 </p>
 
 # Install
 
 ```bash
-brew install --cask ender-wang/tap/edgemark
+brew install --cask mahdix/tap/supernotes
 ```
 
-Or download the latest `.dmg` from [Releases](https://github.com/Ender-Wang/EdgeMark/releases), install it, and then run this command in Terminal:
+Or download the latest `.dmg` from [Releases](https://github.com/mahdix/supernotes/releases), install it, and then run this command in Terminal:
 
 ```bash
-xattr -cr /Applications/EdgeMark.app
+xattr -cr /Applications/SuperNotes.app
 ```
 
 ---
@@ -76,7 +76,7 @@ xattr -cr /Applications/EdgeMark.app
 
 🗂️ **Notes & Storage**
 
-- 📄 Plain `.md` files with no injected headers — open in any editor, sync with any service; metadata lives in a hidden `.edgemark/meta.json` sidecar
+- 📄 Plain `.md` files with no injected headers — open in any editor, sync with any service; metadata lives in a hidden `.supernotes/meta.json` sidecar
 - 📁 Folder-based organization with drag-and-drop
 - 🎨 Custom folder colors — tint any folder's icon with a palette color via right-click → Folder Color
 - 📂 Multiple storage locations — switch between separate note folders (e.g. work and personal) from the menu bar (a quick switch that reverts on restart) or Settings; optionally pick one each time the app opens
@@ -126,11 +126,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for architecture overview, source tree, k
 
 # License
 
-EdgeMark is licensed under the [GNU General Public License v3.0](LICENSE).
+SuperNotes is licensed under the [GNU General Public License v3.0](LICENSE).
 
 # Acknowledgments
 
-EdgeMark is built on top of these open-source projects:
+SuperNotes is built on top of these open-source projects:
 
 | Project | License | Description |
 |---------|---------|-------------|
@@ -141,10 +141,10 @@ EdgeMark is built on top of these open-source projects:
 
 # Star History
 
-<a href="https://star-history.com/#Ender-Wang/EdgeMark&Date">
+<a href="https://star-history.com/#mahdix/supernotes&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Ender-Wang/EdgeMark&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Ender-Wang/EdgeMark&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Ender-Wang/EdgeMark&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mahdix/supernotes&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mahdix/supernotes&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mahdix/supernotes&type=Date" />
  </picture>
 </a>
