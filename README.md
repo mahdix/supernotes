@@ -1,3 +1,5 @@
+<b>Note</b>: This is a fork of EdgeMark open source app which is opinionated based on my preferences.
+
 <img src=".github/assets/SuperNotes.svg" alt="SuperNotes" width="128" align="left" />
 
 <b><font>SuperNotes</font></b>
