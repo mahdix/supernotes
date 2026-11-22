@@ -8,6 +8,7 @@ struct EditorScreen: View {
     @State private var showDeleteConfirm = false
     @State private var pendingEditorReload: String? = nil
     @State private var isFindBarShowing = false
+    @State private var isBackHovered = false
 
     private var backLabel: String {
         noteStore.selectedFolder?.name ?? l10n["common.home"]
@@ -96,11 +97,25 @@ struct EditorScreen: View {
         if let note = noteStore.selectedNote {
             VStack(spacing: 4) {
                 HStack {
-                    HeaderIconButton(
-                        systemName: "chevron.left",
-                        help: backLabel,
-                    ) {
+                    Button {
                         goBack()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundStyle(isBackHovered ? .primary : .secondary)
+                            .frame(width: 44, height: 36)
+                            .background {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(.primary.opacity(isBackHovered ? 0.1 : 0))
+                            }
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(backLabel)
+                    .onHover { hovering in
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            isBackHovered = hovering
+                        }
                     }
 
                     Spacer()
@@ -139,6 +154,25 @@ struct EditorScreen: View {
                         date: note.createdAt.iso8601DisplayFormat,
                         tooltip: L10n.shared.t("editor.createdAt", note.createdAt.iso8601DisplayFormat),
                     )
+                }
+            }
+            .background {
+                // Invisible extended hit area: entire left 10% of the header goes back.
+                // Sits behind the visible button (which stays on top for hover feedback);
+                // empty spacer space falls through to this button.
+                GeometryReader { geo in
+                    HStack(spacing: 0) {
+                        Button {
+                            goBack()
+                        } label: {
+                            Color.clear
+                                .frame(width: max(64, geo.size.width * 0.1), height: geo.size.height)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .help(backLabel)
+                        Spacer(minLength: 0)
+                    }
                 }
             }
         }

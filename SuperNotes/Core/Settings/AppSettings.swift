@@ -200,6 +200,150 @@ final class AppSettings {
         NSColor(hex: marker1ColorHex) ?? .systemRed
     }
 
+    // MARK: - Marker 2
+
+    /// Whether the Marker 2 line highlighting is enabled. Disabled by default.
+    var marker2Enabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(marker2Enabled, forKey: "marker2Enabled")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// The prefix that identifies a Marker 2 line. Default "?". Empty means no line matches.
+    var marker2Prefix: String = "?" {
+        didSet {
+            UserDefaults.standard.set(marker2Prefix, forKey: "marker2Prefix")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// Hex string ("#RRGGBB") for the Marker 2 text color.
+    var marker2ColorHex: String = "#FFCC00" {
+        didSet {
+            UserDefaults.standard.set(marker2ColorHex, forKey: "marker2ColorHex")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// SwiftUI Color resolved from `marker2ColorHex`.
+    var marker2Color: Color {
+        Color(hex: marker2ColorHex) ?? .yellow
+    }
+
+    /// AppKit color resolved from `marker2ColorHex`.
+    var nsMarker2Color: NSColor {
+        NSColor(hex: marker2ColorHex) ?? .systemYellow
+    }
+
+    // MARK: - Marker 3
+
+    /// Whether the Marker 3 line highlighting is enabled. Disabled by default.
+    var marker3Enabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(marker3Enabled, forKey: "marker3Enabled")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// The prefix that identifies a Marker 3 line. Default "~". Empty means no line matches.
+    var marker3Prefix: String = "~" {
+        didSet {
+            UserDefaults.standard.set(marker3Prefix, forKey: "marker3Prefix")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// Hex string ("#RRGGBB") for the Marker 3 text color.
+    var marker3ColorHex: String = "#007AFF" {
+        didSet {
+            UserDefaults.standard.set(marker3ColorHex, forKey: "marker3ColorHex")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// SwiftUI Color resolved from `marker3ColorHex`.
+    var marker3Color: Color {
+        Color(hex: marker3ColorHex) ?? .blue
+    }
+
+    /// AppKit color resolved from `marker3ColorHex`.
+    var nsMarker3Color: NSColor {
+        NSColor(hex: marker3ColorHex) ?? .systemBlue
+    }
+
+    // MARK: - Marker 4
+
+    /// Whether the Marker 4 line highlighting is enabled. Disabled by default.
+    var marker4Enabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(marker4Enabled, forKey: "marker4Enabled")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// The prefix that identifies a Marker 4 line. Default "+". Empty means no line matches.
+    var marker4Prefix: String = "+" {
+        didSet {
+            UserDefaults.standard.set(marker4Prefix, forKey: "marker4Prefix")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// Hex string ("#RRGGBB") for the Marker 4 text color.
+    var marker4ColorHex: String = "#34C759" {
+        didSet {
+            UserDefaults.standard.set(marker4ColorHex, forKey: "marker4ColorHex")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// SwiftUI Color resolved from `marker4ColorHex`.
+    var marker4Color: Color {
+        Color(hex: marker4ColorHex) ?? .green
+    }
+
+    /// AppKit color resolved from `marker4ColorHex`.
+    var nsMarker4Color: NSColor {
+        NSColor(hex: marker4ColorHex) ?? .systemGreen
+    }
+
+    // MARK: - Marker 5
+
+    /// Whether the Marker 5 line highlighting is enabled. Disabled by default.
+    var marker5Enabled: Bool = false {
+        didSet {
+            UserDefaults.standard.set(marker5Enabled, forKey: "marker5Enabled")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// The prefix that identifies a Marker 5 line. Default "%". Empty means no line matches.
+    var marker5Prefix: String = "%" {
+        didSet {
+            UserDefaults.standard.set(marker5Prefix, forKey: "marker5Prefix")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// Hex string ("#RRGGBB") for the Marker 5 text color.
+    var marker5ColorHex: String = "#AF52DE" {
+        didSet {
+            UserDefaults.standard.set(marker5ColorHex, forKey: "marker5ColorHex")
+            NotificationCenter.default.post(name: .markerSettingsChanged, object: nil)
+        }
+    }
+
+    /// SwiftUI Color resolved from `marker5ColorHex`.
+    var marker5Color: Color {
+        Color(hex: marker5ColorHex) ?? .purple
+    }
+
+    /// AppKit color resolved from `marker5ColorHex`.
+    var nsMarker5Color: NSColor {
+        NSColor(hex: marker5ColorHex) ?? .systemPurple
+    }
+
     // MARK: - Hover-to-peek
 
     /// Discrete dwell options for hover-to-preview. Space-to-preview is
@@ -324,6 +468,42 @@ final class AppSettings {
         }
         if let raw = UserDefaults.standard.string(forKey: "marker1ColorHex"), !raw.isEmpty {
             marker1ColorHex = raw
+        }
+        if let raw = UserDefaults.standard.object(forKey: "marker2Enabled") as? Bool {
+            marker2Enabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker2Prefix") {
+            marker2Prefix = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker2ColorHex"), !raw.isEmpty {
+            marker2ColorHex = raw
+        }
+        if let raw = UserDefaults.standard.object(forKey: "marker3Enabled") as? Bool {
+            marker3Enabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker3Prefix") {
+            marker3Prefix = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker3ColorHex"), !raw.isEmpty {
+            marker3ColorHex = raw
+        }
+        if let raw = UserDefaults.standard.object(forKey: "marker4Enabled") as? Bool {
+            marker4Enabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker4Prefix") {
+            marker4Prefix = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker4ColorHex"), !raw.isEmpty {
+            marker4ColorHex = raw
+        }
+        if let raw = UserDefaults.standard.object(forKey: "marker5Enabled") as? Bool {
+            marker5Enabled = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker5Prefix") {
+            marker5Prefix = raw
+        }
+        if let raw = UserDefaults.standard.string(forKey: "marker5ColorHex"), !raw.isEmpty {
+            marker5ColorHex = raw
         }
         if let raw = UserDefaults.standard.object(forKey: "hoverPeekEnabled") as? Bool {
             hoverPeekEnabled = raw

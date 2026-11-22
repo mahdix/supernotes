@@ -251,5 +251,17 @@
   "settings.marker.section": "标记",
   "settings.marker.enable1": "启用标记 1",
   "settings.marker.prefix1": "标记 1 前缀",
-  "settings.marker.color1": "标记 1 颜色"
+  "settings.marker.color1": "标记 1 颜色",
+  "settings.marker.enable2": "启用标记 2",
+  "settings.marker.prefix2": "标记 2 前缀",
+  "settings.marker.color2": "标记 2 颜色",
+  "settings.marker.enable3": "启用标记 3",
+  "settings.marker.prefix3": "标记 3 前缀",
+  "settings.marker.color3": "标记 3 颜色",
+  "settings.marker.enable4": "启用标记 4",
+  "settings.marker.prefix4": "标记 4 前缀",
+  "settings.marker.color4": "标记 4 颜色",
+  "settings.marker.enable5": "启用标记 5",
+  "settings.marker.prefix5": "标记 5 前缀",
+  "settings.marker.color5": "标记 5 颜色"
 }

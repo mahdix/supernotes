@@ -177,15 +177,9 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] navigateToHome")
         navigationDirection = .backward
         clearSelection()
-        let leavingNote = selectedNote != nil
-        let updates = {
+        withoutAnimation {
             self.selectedNote = nil
             self.selectedFolder = nil
-        }
-        if leavingNote {
-            withoutAnimation(updates)
-        } else {
-            withAnimation(.easeInOut(duration: 0.2), updates)
         }
     }
 
@@ -194,7 +188,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] navigateToFolder — \(name, privacy: .public)")
         navigationDirection = .forward
         clearSelection()
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedFolder = folder
         }
     }
@@ -204,7 +198,7 @@ final class NoteStore {
         Log.navigation.debug("[NoteStore] navigateToSubfolder — \(name, privacy: .public)")
         navigationDirection = .forward
         clearSelection()
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withoutAnimation {
             selectedFolder = folder
         }
     }
@@ -220,12 +214,12 @@ final class NoteStore {
                 selectedNote = nil
             }
         } else if let parent = selectedFolder?.parentPath, !parent.isEmpty {
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedFolder = folders.first { $0.name == parent }
                     ?? Folder(name: parent, noteCount: 0)
             }
         } else {
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedFolder = nil
             }
         }
@@ -1062,7 +1056,7 @@ final class NoteStore {
         // Navigate away if inside this folder or any descendant
         if selectedFolder?.name == name || (selectedFolder?.name.hasPrefix(prefix) ?? false) {
             navigationDirection = .backward
-            withAnimation(.easeInOut(duration: 0.2)) {
+            withoutAnimation {
                 selectedFolder = nil
             }
         }

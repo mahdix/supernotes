@@ -251,5 +251,17 @@
   "settings.marker.section": "Marcador",
   "settings.marker.enable1": "Activar Marcador 1",
   "settings.marker.prefix1": "Prefijo del Marcador 1",
-  "settings.marker.color1": "Color del Marcador 1"
+  "settings.marker.color1": "Color del Marcador 1",
+  "settings.marker.enable2": "Activar Marcador 2",
+  "settings.marker.prefix2": "Prefijo del Marcador 2",
+  "settings.marker.color2": "Color del Marcador 2",
+  "settings.marker.enable3": "Activar Marcador 3",
+  "settings.marker.prefix3": "Prefijo del Marcador 3",
+  "settings.marker.color3": "Color del Marcador 3",
+  "settings.marker.enable4": "Activar Marcador 4",
+  "settings.marker.prefix4": "Prefijo del Marcador 4",
+  "settings.marker.color4": "Color del Marcador 4",
+  "settings.marker.enable5": "Activar Marcador 5",
+  "settings.marker.prefix5": "Prefijo del Marcador 5",
+  "settings.marker.color5": "Color del Marcador 5"
 }

@@ -251,5 +251,17 @@
   "settings.marker.section": "मार्कर",
   "settings.marker.enable1": "मार्कर 1 सक्षम करें",
   "settings.marker.prefix1": "मार्कर 1 उपसर्ग",
-  "settings.marker.color1": "मार्कर 1 रंग"
+  "settings.marker.color1": "मार्कर 1 रंग",
+  "settings.marker.enable2": "मार्कर 2 सक्षम करें",
+  "settings.marker.prefix2": "मार्कर 2 उपसर्ग",
+  "settings.marker.color2": "मार्कर 2 रंग",
+  "settings.marker.enable3": "मार्कर 3 सक्षम करें",
+  "settings.marker.prefix3": "मार्कर 3 उपसर्ग",
+  "settings.marker.color3": "मार्कर 3 रंग",
+  "settings.marker.enable4": "मार्कर 4 सक्षम करें",
+  "settings.marker.prefix4": "मार्कर 4 उपसर्ग",
+  "settings.marker.color4": "मार्कर 4 रंग",
+  "settings.marker.enable5": "मार्कर 5 सक्षम करें",
+  "settings.marker.prefix5": "मार्कर 5 उपसर्ग",
+  "settings.marker.color5": "मार्कर 5 रंग"
 }

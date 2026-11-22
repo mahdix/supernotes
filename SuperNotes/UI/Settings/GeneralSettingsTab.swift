@@ -161,6 +161,102 @@ struct GeneralSettingsTab: View {
                     }
                 }
                 .disabled(!settings.marker1Enabled)
+                Divider()
+                Toggle(l10n["settings.marker.enable2"], isOn: $settings.marker2Enabled)
+                LabeledContent(l10n["settings.marker.prefix2"]) {
+                    TextField("", text: $settings.marker2Prefix)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 140)
+                        .disabled(!settings.marker2Enabled)
+                }
+                LabeledContent(l10n["settings.marker.color2"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.marker2Color },
+                            set: { settings.marker2ColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .disabled(!settings.marker2Enabled)
+                        if settings.marker2ColorHex.uppercased() != "#FFCC00" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.marker2ColorHex = "#FFCC00"
+                            }
+                        }
+                    }
+                }
+                .disabled(!settings.marker2Enabled)
+                Divider()
+                Toggle(l10n["settings.marker.enable3"], isOn: $settings.marker3Enabled)
+                LabeledContent(l10n["settings.marker.prefix3"]) {
+                    TextField("", text: $settings.marker3Prefix)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 140)
+                        .disabled(!settings.marker3Enabled)
+                }
+                LabeledContent(l10n["settings.marker.color3"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.marker3Color },
+                            set: { settings.marker3ColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .disabled(!settings.marker3Enabled)
+                        if settings.marker3ColorHex.uppercased() != "#007AFF" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.marker3ColorHex = "#007AFF"
+                            }
+                        }
+                    }
+                }
+                .disabled(!settings.marker3Enabled)
+                Divider()
+                Toggle(l10n["settings.marker.enable4"], isOn: $settings.marker4Enabled)
+                LabeledContent(l10n["settings.marker.prefix4"]) {
+                    TextField("", text: $settings.marker4Prefix)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 140)
+                        .disabled(!settings.marker4Enabled)
+                }
+                LabeledContent(l10n["settings.marker.color4"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.marker4Color },
+                            set: { settings.marker4ColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .disabled(!settings.marker4Enabled)
+                        if settings.marker4ColorHex.uppercased() != "#34C759" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.marker4ColorHex = "#34C759"
+                            }
+                        }
+                    }
+                }
+                .disabled(!settings.marker4Enabled)
+                Divider()
+                Toggle(l10n["settings.marker.enable5"], isOn: $settings.marker5Enabled)
+                LabeledContent(l10n["settings.marker.prefix5"]) {
+                    TextField("", text: $settings.marker5Prefix)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 140)
+                        .disabled(!settings.marker5Enabled)
+                }
+                LabeledContent(l10n["settings.marker.color5"]) {
+                    HStack(spacing: 8) {
+                        ColorPicker("", selection: Binding(
+                            get: { settings.marker5Color },
+                            set: { settings.marker5ColorHex = $0.hexString }
+                        ), supportsOpacity: false)
+                        .labelsHidden()
+                        .disabled(!settings.marker5Enabled)
+                        if settings.marker5ColorHex.uppercased() != "#AF52DE" {
+                            Button(l10n["settings.editor.resetFont"]) {
+                                settings.marker5ColorHex = "#AF52DE"
+                            }
+                        }
+                    }
+                }
+                .disabled(!settings.marker5Enabled)
             } header: {
                 Label(l10n["settings.marker.section"], systemImage: "highlighter")
             }

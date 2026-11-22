@@ -16,24 +16,11 @@ struct ContentView: View {
         !noteStore.showTrash && noteStore.selectedNote != nil
     }
 
-    /// Horizontal page transition based on navigation direction.
-    /// Falls back to opacity when the user has chosen Fade animation style.
+    /// Folder navigation is instant — no slide/fade animation when entering a folder
+    /// or moving back from a folder view. See NoteStore `withoutAnimation` for
+    /// folder transitions.
     private var pageTransition: AnyTransition {
-        guard PanelSettings.shared.animationStyle == .slide else { return .opacity }
-        switch noteStore.navigationDirection {
-        case .forward:
-            return .asymmetric(
-                insertion: .move(edge: .trailing),
-                removal: .move(edge: .leading),
-            )
-        case .backward:
-            return .asymmetric(
-                insertion: .move(edge: .leading),
-                removal: .move(edge: .trailing),
-            )
-        case .overlay, .none:
-            return .opacity
-        }
+        .identity
     }
 
     /// Trash uses vertical slide (from bottom), or opacity in Fade mode.

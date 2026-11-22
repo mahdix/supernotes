@@ -1,4 +1,4 @@
-rm -rf /Volumes/Data/Applications/SuperNotes.app
-cp -R dist/SuperNotes.app /Volumes/Data/Applications/
-xattr -cr /Volumes/Data/Applications/SuperNotes.app
-open /Volumes/Data/Applications/SuperNotes.app
+rm -rf /Users/mahdi.m/Applications/SuperNotes.app
+cp -R dist/SuperNotes.app /Users/mahdi.m/Applications/
+xattr -cr /Users/mahdi.m/Applications/SuperNotes.app
+open /Users/mahdi.m/Applications/SuperNotes.app
